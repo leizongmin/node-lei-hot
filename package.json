@@ -27,9 +27,10 @@
   },
   "devDependencies":	{
     "mocha":        "~1.9",
-    "should":       "~1.2"
+    "should":       "~1.2",
+    "bright-flow":  "~0.1"
   },
   "scripts": {
-    "test":         "mocha -t 5000"
+    "test":         "mocha -t 30000"
   }
 }
