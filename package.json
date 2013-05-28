@@ -10,14 +10,14 @@
   ],
   "repository": {
     "type": "git",
-    "url":  "git://github.com/leizongmin/lei-hot.git"
+    "url":  "git://github.com/leizongmin/node-lei-hot.git"
   },
   "licenses":     [{
     "type":         "MIT",
-    "url":          "https://raw.github.com/leizongmin/lei-hot/master/MIT-License"
+    "url":          "https://raw.github.com/leizongmin/node-lei-hot/master/MIT-License"
   }],
   "bugs":{
-    "url":          "https://github.com/leizongmin/lei-hot/issues"
+    "url":          "https://github.com/leizongmin/node-lei-hot/issues"
   },
   "engines": {
     "node":         ">= 0.6.0"

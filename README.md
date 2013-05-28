@@ -1,4 +1,4 @@
-lei-hot
+lei-hot [![Build Status](https://secure.travis-ci.org/leizongmin/node-lei-hot.png?branch=master)](http://travis-ci.org/leizongmin/node-lei-hot) [![Dependencies Status](https://david-dm.org/leizongmin/node-lei-hot.png)](http://david-dm.org/leizongmin/node-lei-hot)
 =======
 
 
@@ -12,8 +12,7 @@ hot.on('load', function (file, exports) {
   debug('成功载入模块%s', file);
 });
 // 其他事件：
-// load         文件成功载入时触发（每次）
-// first load   文件第一次成功载入时触发
+// load         文件成功载入时触发(重载时也会触发此事件)
 // reload       文件重新成功载入时触发
 // unload       文件卸载后触发
 // error        载入文件出错时触发
@@ -48,6 +47,7 @@ exports.unload = function (exports) {
 
 * 不要在其他代码中引用热更新文件所输出的对象
 * 所有对热更新代码中的数据/函数操作，必须是即时获取的
+* 尽量少使用 `.unload()` 来卸载代码（可能会引发内存泄漏），如果要强制重载，使用 `.reload()`
 
 
 License
