@@ -57,6 +57,16 @@ describe('HotReload', function () {
     (typeof hot.cache[filename]).should.equal('object');
   });
 
+  it('#载入成功 - 返回模块 - 输出函数（非默认的对象）', function () {
+    var hot = new HotReload();
+    var filename = filePath('right_exports_function.js');
+    var m = hot.load(filename);
+    (typeof m).should.equal('function');
+    (typeof m()).should.equal('function');
+    m()('HAHA').should.equal('hello, HAHA');
+    (typeof hot.cache[filename]).should.equal('object');
+  });
+  
   it('#载入模块成功，模块未更改 - 不重新载入', function () {
     var hot = new HotReload();
     var filename = filePath('right_load_once.js');
@@ -157,35 +167,35 @@ describe('HotReload', function () {
   });
 
   it('卸载模块时执行unload函数', function () {
-    // TODO
+    var hot = new HotReload();
+    var filename = filePath('right_unload.js');
+
+    var m = hot.load(filename);
+    var value = Math.random();
+    var share = m().set(value);
+    (typeof share.should).should.equal('object');
+    share.value.should.equal(value);
+
+    hot.unload(filename);
+    should.equal(share.value, null);
   });
 
   it('#事件 - load', function () {
     var hot = new HotReload();
-    var filename = filePath('.modified_auto_reload_2.js');
-
-    function modify () {
-      fs.writeFileSync(filename, fs.readFileSync(filePath('right_load_once.js')))
-    }
+    var filename = filePath('right_load_once.js');
 
     var counter = 0;
     hot.on('load', function (f) {
       counter++;
     });
 
-    modify();
     hot.load(filename);
     counter.should.equal(1);
-    fs.unlink(filename);
   });
 
   it('#事件 - reload', function () {
     var hot = new HotReload();
-    var filename = filePath('.modified_auto_reload_3.js');
-
-    function modify () {
-      fs.writeFileSync(filename, fs.readFileSync(filePath('right_load_once.js')))
-    }
+    var filename = filePath('right_load_once.js');
 
     var counter1 = 0;
     var counter2 = 0;
@@ -198,22 +208,16 @@ describe('HotReload', function () {
       counter2++;
     });
 
-    modify();
     hot.load(filename);
     hot.reload(filename);
     hot.reload(filename);
     counter1.should.equal(3);
     counter2.should.equal(2);
-    fs.unlink(filename);
   });
 
   it('#事件 - unload', function () {
     var hot = new HotReload();
-    var filename = filePath('.modified_auto_reload_4.js');
-
-    function modify () {
-      fs.writeFileSync(filename, fs.readFileSync(filePath('right_load_once.js')))
-    }
+    var filename = filePath('right_load_once.js');
 
     var counter1 = 0;
     var counter2 = 0;
@@ -231,7 +235,6 @@ describe('HotReload', function () {
       counter3++;
     });
 
-    modify();
     hot.load(filename);
     hot.reload(filename);
     hot.reload(filename);
@@ -239,11 +242,22 @@ describe('HotReload', function () {
     counter1.should.equal(3);
     counter2.should.equal(2);
     counter3.should.equal(3);
-    fs.unlink(filename);
   });
 
-  it('#事件 - error - 调用模块的unload时出错', function () {
-    // TODO
+  it('#事件 - error - 卸载模块时出错', function () {
+    var hot = new HotReload();
+    var filename = filePath('wrong_unload.js');
+
+    var counter = 0;
+    hot.on('error', function (err) {
+      err.should.instanceof(Error);
+      console.log(err)
+      counter++;
+    });
+
+    var m = hot.load(filename);
+    hot.unload(filename);
+    counter.should.equal(1);
   });
 
 });
