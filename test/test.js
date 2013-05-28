@@ -88,7 +88,7 @@ describe('HotReload', function () {
 
   it('#文件修改后自动更新', function (done) {
     var hot = new HotReload();
-    var filename = filePath('.modified_auto_reload.js');
+    var filename = filePath('.modified_auto_reload_1.js');
 
     function modify () {
       fs.writeFileSync(filename, fs.readFileSync(filePath('right_load_once.js')))
@@ -160,86 +160,86 @@ describe('HotReload', function () {
     // TODO
   });
 
-  it('#事件 - load & first load & reload & unload', function (done) {
+  it('#事件 - load', function () {
     var hot = new HotReload();
-    var filename = filePath('.modified_auto_reload.js');
+    var filename = filePath('.modified_auto_reload_2.js');
 
     function modify () {
       fs.writeFileSync(filename, fs.readFileSync(filePath('right_load_once.js')))
     }
 
-    var counter = {
-      load:   0,
-      fload:  0,
-      reload: 0,
-      unload: 0
-    };
+    var counter = 0;
+    hot.on('load', function (f) {
+      counter++;
+    });
 
+    modify();
+    hot.load(filename);
+    counter.should.equal(1);
+    fs.unlink(filename);
+  });
+
+  it('#事件 - reload', function () {
+    var hot = new HotReload();
+    var filename = filePath('.modified_auto_reload_3.js');
+
+    function modify () {
+      fs.writeFileSync(filename, fs.readFileSync(filePath('right_load_once.js')))
+    }
+
+    var counter1 = 0;
+    var counter2 = 0;
     hot.on('load', function (f) {
       f.should.equal(filename);
-      counter.load++;
+      counter1++;
     });
-
-    hot.on('first load', function (f) {
-      f.should.equal(filename);
-      counter.fload++;
-    });
-
     hot.on('reload', function (f) {
       f.should.equal(filename);
-      counter.reload++;
+      counter2++;
     });
 
+    modify();
+    hot.load(filename);
+    hot.reload(filename);
+    hot.reload(filename);
+    counter1.should.equal(3);
+    counter2.should.equal(2);
+    fs.unlink(filename);
+  });
+
+  it('#事件 - unload', function () {
+    var hot = new HotReload();
+    var filename = filePath('.modified_auto_reload_4.js');
+
+    function modify () {
+      fs.writeFileSync(filename, fs.readFileSync(filePath('right_load_once.js')))
+    }
+
+    var counter1 = 0;
+    var counter2 = 0;
+    var counter3 = 0;
+    hot.on('load', function (f) {
+      f.should.equal(filename);
+      counter1++;
+    });
+    hot.on('reload', function (f) {
+      f.should.equal(filename);
+      counter2++;
+    });
     hot.on('unload', function (f) {
       f.should.equal(filename);
-      counter.unload++;
+      counter3++;
     });
 
-    var values = [];
-
-    brightFlow.series()
-    .do(function (done) {
-      modify();
-      var m = hot.load(filename);
-      (typeof m).should.equal('function');
-      (typeof m().value).should.equal('function');
-      values[0] = m().value();
-      values[0].should.equal(m().value());
-      setTimeout(done, 1000);
-    })
-    .do(function (done) {
-      modify();
-      var m = hot.load(filename);
-      (typeof m).should.equal('function');
-      (typeof m().value).should.equal('function');
-      values[1] = m().value();
-      values[1].should.equal(m().value());
-      setTimeout(done, 1000);
-    })
-    .do(function (done) {
-      modify();
-      var m = hot.load(filename);
-      (typeof m).should.equal('function');
-      (typeof m().value).should.equal('function');
-      values[2] = m().value();
-      values[2].should.equal(m().value());
-      setTimeout(done, 1000);
-    })
-    .end(function (err) {
-      should.equal(err, null);
-
-      counter.load.should.equal(3);
-      counter.fload.should.equal(1);
-      counter.unload.should.equal(2);
-      counter.reload.should.equal(2);
-
-      value[0].should.not.equal(value[1]);
-      value[0].should.not.equal(value[2]);
-      value[1].should.not.equal(value[2]);
-
-      fs.unlink(filename);
-      done();
-    });
+    modify();
+    hot.load(filename);
+    hot.reload(filename);
+    hot.reload(filename);
+    hot.unload(filename);
+    counter1.should.equal(3);
+    counter2.should.equal(2);
+    counter3.should.equal(3);
+    fs.unlink(filename);
   });
 
   it('#事件 - error - 调用模块的unload时出错', function () {
