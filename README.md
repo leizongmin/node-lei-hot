@@ -1,6 +1,8 @@
 lei-hot [![Build Status](https://secure.travis-ci.org/leizongmin/node-lei-hot.png?branch=master)](http://travis-ci.org/leizongmin/node-lei-hot) [![Dependencies Status](https://david-dm.org/leizongmin/node-lei-hot.png)](http://david-dm.org/leizongmin/node-lei-hot)
 =======
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/leizongmin/node-lei-hot.svg)](https://greenkeeper.io/)
+
 
 初始化
 
